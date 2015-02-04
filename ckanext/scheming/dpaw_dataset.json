@@ -63,7 +63,7 @@
             "help_inline": true,
             "form_placeholder": "Joe Bloggs",
             "display_property": "dc:creator",
-            "display_field": "false"
+            "hide_field": "true"
         },
         {
             "field_name": "author_email",
@@ -89,7 +89,7 @@
             "help_inline": true,
             "form_placeholder": "Joe Bloggs",
             "display_property": "dc:contributor",
-            "display_field": "false"
+            "hide_field": "true"
         },
         {
             "field_name": "maintainer_email",
