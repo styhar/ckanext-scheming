@@ -10,6 +10,7 @@ from ckan.logic.schema import group_form_schema, default_show_group_schema
 from paste.deploy.converters import asbool
 
 from ckanext.scheming import helpers
+from ckanext.scheming import loader
 from ckanext.scheming.errors import SchemingException
 from ckanext.scheming.validation import (
     validators_from_string, scheming_choices, scheming_required,
@@ -21,7 +22,6 @@ from ckanext.scheming.logic import (
     )
 
 import os
-import json
 import inspect
 import logging
 
@@ -148,7 +148,7 @@ class _GroupOrganizationMixin(object):
             if action_type == 'show' else _field_validators)
 
         for f in scheming_fields:
-            schema[f['field_name']] = get_validators(f,
+            schema[f['field_name']] = get_validators(f, scheming_schema,
                 f['field_name'] not in schema)
 
         return navl_validate(data_dict, schema, context)
@@ -197,16 +197,21 @@ class SchemingDatasetsPlugin(p.SingletonPlugin, DefaultDatasetForm,
                 "Unsupported dataset type: {t}".format(t=t)]}
         scheming_schema = self._expanded_schemas[t]
 
-        get_validators = (_field_output_validators
-            if action_type == 'show' else _field_validators)
+        if action_type == 'show':
+            get_validators = _field_output_validators
+        elif action_type == 'create':
+            get_validators = _field_create_validators
+        else:
+            get_validators = _field_validators
 
         for f in scheming_schema['dataset_fields']:
-            schema[f['field_name']] = get_validators(f,
+            schema[f['field_name']] = get_validators(f, scheming_schema,
                 f['field_name'] not in schema)
 
         resource_schema = schema['resources']
         for f in scheming_schema['resource_fields']:
-            resource_schema[f['field_name']] = get_validators(f, False)
+            resource_schema[f['field_name']] = get_validators(
+                f, scheming_schema, False)
 
         return navl_validate(data_dict, schema, context)
 
@@ -311,7 +316,7 @@ def _load_schema_module_path(url):
         return
     p = os.path.join(os.path.dirname(inspect.getfile(m)), file_name)
     if os.path.exists(p):
-        return json.load(open(p))
+        return loader.load(open(p))
 
 def _load_schema_url(url):
     import urllib2
@@ -321,10 +326,10 @@ def _load_schema_url(url):
     except urllib2.URLError:
         raise SchemingException("Could not load %s" % url)
 
-    return json.loads(tables)
+    return loader.loads(tables, url)
 
 
-def _field_output_validators(f, convert_extras):
+def _field_output_validators(f, schema, convert_extras):
     """
     Return the output validators for a scheming field f
     """
@@ -333,20 +338,34 @@ def _field_output_validators(f, convert_extras):
     else:
         validators = [ignore_missing]
     if 'output_validators' in f:
-        validators += validators_from_string(f['output_validators'], f)
+        validators += validators_from_string(
+            f['output_validators'], f, schema)
     return validators
 
-def _field_validators(f, convert_extras):
+def _field_validators(f, schema, convert_extras):
     """
     Return the validators for a scheming field f
     """
     validators = []
     if 'validators' in f:
-        validators = validators_from_string(f['validators'], f)
+        validators = validators_from_string(f['validators'], f, schema)
     elif helpers.scheming_field_required(f):
         validators = [not_empty, unicode]
     else:
         validators = [ignore_missing, unicode]
+
+    if convert_extras:
+        validators = validators + [convert_to_extras]
+    return validators
+
+def _field_create_validators(f, schema, convert_extras):
+    """
+    Return the validators to use when creating for scheming field f,
+    normally the same as the validators used for updating
+    """
+    if 'create_validators' not in f:
+        return _field_validators(f, schema, convert_extras)
+    validators = validators_from_string(f['create_validators'], f, schema)
 
     if convert_extras:
         validators = validators + [convert_to_extras]

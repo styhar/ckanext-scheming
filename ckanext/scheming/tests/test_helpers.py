@@ -11,17 +11,21 @@ class TestLanguageText(object):
     def test_only_one_language(self):
         assert_equals('hello', scheming_language_text(
             {'zh': 'hello'},
-            _lang='en'))
+            prefer_lang='en'))
 
     def test_matching_language(self):
         assert_equals('hello', scheming_language_text(
             {'en': 'hello', 'aa': 'aaaa'},
-            _lang='en'))
+            prefer_lang='en'))
 
     def test_first_when_no_matching_language(self):
         assert_equals('hello', scheming_language_text(
             {'aa': 'hello', 'bb': 'no'},
-            _lang='en'))
+            prefer_lang='en'))
+
+    def test_decodes_utf8(self):
+        assert_equals(u'\xa1Hola!', scheming_language_text('\xc2\xa1Hola!'))
+
 
 class TestFieldRequired(object):
     def test_explicit_required_true(self):

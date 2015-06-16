@@ -3,17 +3,18 @@ from pylons import config
 from pylons.i18n import gettext
 
 
-def scheming_language_text(text, _gettext=None, _lang=None):
+def scheming_language_text(text, prefer_lang=None, _gettext=None):
     """
     :param text: {lang: text} dict or text string
+    :param prefer_lang: choose this language version if available
 
     Convert "language-text" to users' language by looking up
     languag in dict or using gettext if not a dict
     """
     if hasattr(text, 'get'):
-        if _lang is None:
-            _lang = lang()
-        v = text.get(_lang)
+        if prefer_lang is None:
+            prefer_lang = lang()
+        v = text.get(prefer_lang)
         if not v:
             v = text.get(config.get('ckan.locale_default', 'en'))
             if not v:
@@ -23,7 +24,11 @@ def scheming_language_text(text, _gettext=None, _lang=None):
     else:
         if _gettext is None:
             _gettext = gettext
-        return _gettext(text)
+
+        t = _gettext(text)
+        if isinstance(t, str):
+            return t.decode('utf-8')
+        return t
 
 
 def scheming_choices_label(choices, value):
@@ -114,4 +119,3 @@ def scheming_get_organization_schema(organization_type, expanded=True):
     schemas = scheming_organization_schemas(expanded)
     if schemas:
         return schemas.get(organization_type)
-
