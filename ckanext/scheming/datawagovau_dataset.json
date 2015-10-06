@@ -123,7 +123,7 @@
         {
             "field_name":"update_frequency",
             "label": "Update frequency",
-            "help_text": "How often are data resources expected to be updated?",
+            "help_text": "How often will the data resources be updated?",
             "help_inline": true,
 	    "display_property": "dcat:Dataset/dct:accrualPeriodocity",
             "preset": "select",
