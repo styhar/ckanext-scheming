@@ -343,3 +343,20 @@ Useful for email fields, this property specifies the `field_name` of the related
 name field. The label will be the titlecased `field_name` (e.g. "Author" instead
 of "Author Email"); the value will be rendered with `field_name`'s value, i.e.
 the email will be rendered as a clickable name.
+
+Running the Tests
+=================
+
+To run the tests, do:
+
+```nosetests --ckan --nologcapture --with-pylons=test.ini```
+
+and
+
+```nosetests --ckan --nologcapture --with-pylons=test_subclass.ini ckanext.scheming.tests.test_dataset_display ckanext.scheming.tests.test_form:TestDatasetFormNew ckanext.scheming.tests.test_dataset_logic```
+
+To run the tests and produce a coverage report, first make sure you have
+coverage installed in your virtualenv (``pip install coverage``) then run:
+
+```nosetests --ckan --nologcapture --with-pylons=test.ini --with-coverage --cover-package=ckanext.scheming --cover-inclusive --cover-erase --cover-tests```
+
