@@ -1,4 +1,9 @@
+<<<<<<< HEAD
 recursive-include ckanext/scheming/templates *
 recursive-include ckanext/scheming/templates/macros *
 recursive-include ckanext/scheming *.json
 recursive-include ckanext/scheming/tests *.ini
+=======
+recursive-include ckanext *.html *.json *.yaml
+include README.md CHANGELOG.md *.ini
+>>>>>>> upstream/master
