@@ -92,6 +92,12 @@
       "preset": "date"
     },
     {
+      "field_name": "a_relevant_datetime",
+      "label": "A relevant date",
+      "label_time": "A relevant time",
+      "preset": "datetime"
+    },
+    {
       "field_name": "other",
       "label": {"en": "Other information"},
       "help_text": "The help text goes here",
@@ -121,6 +127,12 @@
       "field_name": "date",
       "label": "Date",
       "preset": "date"
+    },
+    {
+      "field_name": "datetime",
+      "label": "Date Taken",
+      "label_time": "Time Taken",
+      "preset": "datetime"
     }
 
   ]
