@@ -2,16 +2,14 @@
 # encoding: utf-8
 from pylons import c
 import ckan.plugins as p
-from ckan.lib.plugins import (
+from ckantoolkit import (
     DefaultDatasetForm,
     DefaultGroupForm,
-    DefaultOrganizationForm
-)
-from ckan.plugins.toolkit import (
+    DefaultOrganizationForm,
     get_validator,
     get_converter,
     navl_validate,
-    add_template_directory
+    add_template_directory,
 )
 
 from paste.reloader import watch_file
@@ -26,7 +24,8 @@ from ckanext.scheming.validation import (
     scheming_required,
     scheming_multiple_choice,
     scheming_multiple_choice_output,
-    scheming_isodatetime
+    scheming_isodatetime,
+    scheming_isodatetime_tz
 )
 from ckanext.scheming.logic import (
     scheming_dataset_schema_list,
@@ -88,10 +87,12 @@ class _SchemingMixin(object):
                 helpers.scheming_organization_schemas,
             'scheming_get_organization_schema':
                 helpers.scheming_get_organization_schema,
-            'scheming_field_by_name':
-                helpers.scheming_field_by_name,
+            'scheming_field_by_name': helpers.scheming_field_by_name,
             'scheming_get_presets': helpers.scheming_get_presets,
-            'scheming_get_preset': helpers.scheming_get_preset
+            'scheming_get_preset': helpers.scheming_get_preset,
+            'scheming_get_schema': helpers.scheming_get_schema,
+            'scheming_get_timezones': helpers.scheming_get_timezones,
+            'scheming_datetime_to_tz': helpers.scheming_datetime_to_tz
             }
 
     def get_validators(self):
@@ -105,7 +106,8 @@ class _SchemingMixin(object):
             'scheming_multiple_choice_output': scheming_multiple_choice_output,
             'convert_to_json_if_date': convert_to_json_if_date,
             'convert_to_json_if_datetime': convert_to_json_if_datetime,
-            'scheming_isodatetime': scheming_isodatetime
+            'scheming_isodatetime': scheming_isodatetime,
+            'scheming_isodatetime_tz': scheming_isodatetime_tz,
             }
 
     def _add_template_directory(self, config):
@@ -314,6 +316,10 @@ class SchemingOrganizationsPlugin(p.SingletonPlugin, _GroupOrganizationMixin,
 
     def group_form(group_type=None):
         return 'scheming/organization/group_form.html'
+
+    # use the correct controller (see ckan/ckan#2771)
+    def group_controller(self):
+        return 'organization'
 
     def get_actions(self):
         return {

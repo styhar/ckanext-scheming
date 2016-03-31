@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0.0'
+version = '1.0.1b'
 
 setup(
     name='ckanext-scheming',
@@ -20,7 +20,9 @@ setup(
     include_package_data=True,
     zip_safe=False,
     install_requires=[
-        # -*- Extra requirements: -*-
+        "ckanapi",
+        "ckantoolkit>=0.0.2",
+        "pytz",
     ],
     entry_points=\
     """

@@ -5,8 +5,8 @@ This extension provides a way to configure and share
 CKAN schemas using a JSON schema description. Custom
 template snippets for editing and display are also supported.
 
-[![Build Status](https://travis-ci.org/open-data/ckanext-scheming.svg?branch=master)](https://travis-ci.org/open-data/ckanext-scheming)
-[![Coverage](https://coveralls.io/repos/open-data/ckanext-scheming/badge.svg?branch=master&service=github)](https://coveralls.io/github/open-data/ckanext-scheming?branch=master)
+[![Circle CI](https://circleci.com/gh/ckan/ckanext-scheming/tree/master.svg?style=svg)](https://circleci.com/gh/ckan/ckanext-scheming/tree/master)
+[![Coverage](https://coveralls.io/repos/ckan/ckanext-scheming/badge.svg?branch=master&service=github)](https://coveralls.io/github/ckan/ckanext-scheming?branch=master)
 
 Requirements
 ============
@@ -272,6 +272,19 @@ This extension includes the following display snippets:
   show the label text for the choice selected
 * [multiple_choice.html](ckanext/scheming/templates/scheming/display_snippets/) -
   show the label text for all choices selected
+
+
+### `select_size`
+
+Set to the number of [choices](#choices) to display in select, multiple_select
+and multiple_check_box [form](#form_snippet) and [display](#display_snippet) 
+snippets.
+ 
+ 
+### `sorted_choices`
+
+Set to `"true"` to sort [choices](#choices) alphabetically in [form](#form_snippet) 
+and [display](#display_snippet) snippets.
 
 
 ### `validators`

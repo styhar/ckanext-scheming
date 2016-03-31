@@ -1,7 +1,7 @@
 {
   "scheming_presets_version": 1,
   "about": "these are the default scheming field presets",
-  "about_url": "http://github.com/open-data/ckanext-scheming#preset",
+  "about_url": "http://github.com/ckan/ckanext-scheming#preset",
   "presets": [
     {
       "preset_name": "title",
@@ -100,6 +100,14 @@
         "form_snippet": "datetime.html",
         "display_snippet": "datetime.html",
         "validators": "scheming_isodatetime convert_to_json_if_datetime"
+      }
+    },
+    {
+      "preset_name": "datetime_tz",
+      "values": {
+        "form_snippet": "datetime_tz.html",
+        "display_snippet": "datetime_tz.html",
+        "validators": "scheming_isodatetime_tz convert_to_json_if_datetime"
       }
     }
   ]
