@@ -12,7 +12,18 @@
   {% if h.scheming_field_by_name(schema.dataset_fields, 'notes') and
     pkg.notes%}
     <div class="notes embedded-content">
-      {{ h.render_markdown(pkg.notes) }}
+      <!-- read more or less -->
+      {% if h.render_markdown(pkg.notes)|length < 1250 %}
+        {{ h.render_markdown(pkg.notes) }}
+      {% else %}
+        {% if pkg.name in request.url %}
+          {{ h.render_markdown(pkg.notes)[0:1250] + '...' }}
+          {% link_for _('read more >>'), controller='package', action='read', id=pkg.id %}
+        {% else %}
+          {{ h.render_markdown(pkg.notes) }}
+          {% link_for _('<< read less'), controller='package', action='read', id=pkg.name %}
+        {% endif %}
+      {% endif %}
     </div>
   {% endif %}
 {% endblock %}
