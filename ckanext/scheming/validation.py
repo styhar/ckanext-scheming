@@ -29,7 +29,19 @@ def scheming_choices(field, schema):
     """
     Require that one of the field choices values is passed.
     """
-    return OneOf([c['value'] for c in field['choices']])
+    if 'choices' in field:
+        return OneOf([c['value'] for c in field['choices']])
+
+    def validator(value):
+        if value is missing or not value:
+            return value
+        choices = sh.scheming_field_choices(field)
+        for c in choices:
+            if value == c['value']:
+                return value
+        raise Invalid(_('unexpected choice "%s"') % value)
+
+    return validator
 
 
 @scheming_validator
@@ -56,7 +68,10 @@ def scheming_multiple_choice(field, schema):
 
        "choice-a"
     """
-    choice_values = set(c['value'] for c in field['choices'])
+    static_choice_values = None
+    if 'choices' in field:
+        static_choice_order = [c['value'] for c in field['choices']]
+        static_choice_values = set(static_choice_order)
 
     def validator(key, data, errors, context):
         # if there was an error before calling our validator
@@ -74,6 +89,11 @@ def scheming_multiple_choice(field, schema):
         else:
             value = []
 
+        choice_values = static_choice_values
+        if not choice_values:
+            choice_order = [c['value'] for c in sh.scheming_field_choices(field)]
+            choice_values = set(choice_order)
+
         selected = set()
         for element in value:
             if element in choice_values:
@@ -82,8 +102,9 @@ def scheming_multiple_choice(field, schema):
             errors[key].append(_('unexpected choice "%s"') % element)
 
         if not errors[key]:
-            data[key] = json.dumps([
-                c['value'] for c in field['choices'] if c['value'] in selected])
+            data[key] = json.dumps([v for v in
+                (static_choice_order if static_choice_values else choice_order)
+                if v in selected])
 
             if field.get('required') and not selected:
                 errors[key].append(_('Select at least one'))
@@ -203,6 +224,51 @@ def scheming_isodatetime_tz(field, schema):
         data[key] = date
 
     return validator
+
+
+def scheming_valid_json_object(value, context):
+    """Store a JSON object as a serialized JSON string
+
+    It accepts two types of inputs:
+        1. A valid serialized JSON string (it must be an object or a list)
+        2. An object that can be serialized to JSON
+
+    """
+    if not value:
+        return
+    elif isinstance(value, basestring):
+        try:
+            loaded = json.loads(value)
+
+            if not isinstance(loaded, dict):
+                raise Invalid(
+                    _('Unsupported value for JSON field: {}').format(value)
+                )
+
+            return value
+        except (ValueError, TypeError) as e:
+            raise Invalid(_('Invalid JSON string: {}').format(e))
+
+    elif isinstance(value, dict):
+        try:
+            return json.dumps(value)
+        except (ValueError, TypeError) as e:
+            raise Invalid(_('Invalid JSON object: {}').format(e))
+    else:
+        raise Invalid(
+            _('Unsupported type for JSON field: {}').format(type(value))
+        )
+
+    return value
+
+
+def scheming_load_json(value, context):
+    if isinstance(value, basestring):
+        try:
+            return json.loads(value)
+        except ValueError:
+            return value
+    return value
 
 
 def scheming_multiple_choice_output(value):

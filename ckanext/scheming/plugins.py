@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # encoding: utf-8
-from pylons import c
 import ckan.plugins as p
+from ckan.common import c
 from ckantoolkit import (
     DefaultDatasetForm,
     DefaultGroupForm,
@@ -25,7 +25,9 @@ from ckanext.scheming.validation import (
     scheming_multiple_choice,
     scheming_multiple_choice_output,
     scheming_isodatetime,
-    scheming_isodatetime_tz
+    scheming_isodatetime_tz,
+    scheming_valid_json_object,
+    scheming_load_json,
 )
 from ckanext.scheming.logic import (
     scheming_dataset_schema_list,
@@ -75,6 +77,7 @@ class _SchemingMixin(object):
         return {
             'scheming_language_text': helpers.scheming_language_text,
             'scheming_choices_label': helpers.scheming_choices_label,
+            'scheming_field_choices': helpers.scheming_field_choices,
             'scheming_field_required': helpers.scheming_field_required,
             'scheming_dataset_schemas': helpers.scheming_dataset_schemas,
             'scheming_get_dataset_schema': helpers.scheming_get_dataset_schema,
@@ -89,7 +92,9 @@ class _SchemingMixin(object):
             'scheming_get_preset': helpers.scheming_get_preset,
             'scheming_get_schema': helpers.scheming_get_schema,
             'scheming_get_timezones': helpers.scheming_get_timezones,
-            'scheming_datetime_to_tz': helpers.scheming_datetime_to_tz
+            'scheming_datetime_to_tz': helpers.scheming_datetime_to_tz,
+            'scheming_datastore_choices': helpers.scheming_datastore_choices,
+            'scheming_display_json_value': helpers.scheming_display_json_value,
             }
 
     def get_validators(self):
@@ -105,6 +110,8 @@ class _SchemingMixin(object):
             'convert_to_json_if_datetime': convert_to_json_if_datetime,
             'scheming_isodatetime': scheming_isodatetime,
             'scheming_isodatetime_tz': scheming_isodatetime_tz,
+            'scheming_valid_json_object': scheming_valid_json_object,
+            'scheming_load_json': scheming_load_json,
             }
 
     def _add_template_directory(self, config):

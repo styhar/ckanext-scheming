@@ -1,4 +1,4 @@
-from nose.tools import assert_true
+from nose.tools import assert_true, assert_in
 
 from ckantoolkit.tests.factories import Sysadmin, Dataset
 from ckantoolkit.tests.helpers import FunctionalTestBase, submit_and_follow
@@ -9,7 +9,7 @@ class TestDatasetDisplay(FunctionalTestBase):
         user = Sysadmin()
         Dataset(
             user=user,
-            type='camel-photos',
+            type='test-schema',
             name='set-one',
             humps=3,
             resources=[{
@@ -24,7 +24,7 @@ class TestDatasetDisplay(FunctionalTestBase):
         user = Sysadmin()
         d = Dataset(
             user=user,
-            type='camel-photos',
+            type='test-schema',
             name='set-two',
             humps=3,
             resources=[{
@@ -42,7 +42,7 @@ class TestDatasetDisplay(FunctionalTestBase):
         user = Sysadmin()
         d = Dataset(
             user=user,
-            type='camel-photos',
+            type='test-schema',
             name='with-choice',
             category='hybrid',
             )
@@ -66,7 +66,7 @@ class TestDatasetDisplay(FunctionalTestBase):
         user = Sysadmin()
         d = Dataset(
             user=user,
-            type='camel-photos',
+            type='test-schema',
             name='with-multiple-choice-n',
             personality=['friendly', 'spits'],
             )
@@ -80,7 +80,7 @@ class TestDatasetDisplay(FunctionalTestBase):
         user = Sysadmin()
         d = Dataset(
             user=user,
-            type='camel-photos',
+            type='test-schema',
             name='with-multiple-choice-one',
             personality=['friendly'],
             )
@@ -91,3 +91,22 @@ class TestDatasetDisplay(FunctionalTestBase):
                     in response.body)
         assert_true('<ul><li>Often friendly</li></ul>'
                     not in response.body)
+
+    def test_json_field_displayed(self):
+        user = Sysadmin()
+        d = Dataset(
+            user=user,
+            type='test-schema',
+            name='plain-json',
+            a_json_field={'a': '1', 'b': '2'},
+            )
+        app = self._get_test_app()
+        response = app.get(url='/dataset/plain-json')
+
+        expected = '''{
+  "a": "1", 
+  "b": "2"
+}'''.replace('"', '&#34;')   # Ask webhelpers
+
+        assert_in(expected, response.body)
+        assert_in('Example JSON', response.body)

@@ -6,7 +6,7 @@
     field.get('form_include_blank_choice', false) -%}
   {%- do options.append({'value': '', 'text': ''}) -%}
 {%- endif -%}
-{%- for c in field.choices -%}
+{%- for c in h.scheming_field_choices(field) -%}
   {%- if not form_restrict_choices_to or c.value in form_restrict_choices_to -%}
     {%- do options.append({
       'value': c.value,
@@ -25,7 +25,7 @@
     selected=data[field.field_name],
     error=errors[field.field_name],
     classes=['control-medium'],
-    attrs=field.form_attrs if 'form_attrs' in field else {},
+    attrs=field.form_attrs if 'form_attrs' in field else {"class": "form-control"},
     is_required=h.scheming_field_required(field)
     )
 %}

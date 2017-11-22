@@ -1,7 +1,7 @@
 from setuptools import setup, find_packages
 import sys, os
 
-version = '1.0.1b'
+version = '1.1.0'
 
 setup(
     name='ckanext-scheming',
@@ -19,11 +19,7 @@ setup(
     namespace_packages=['ckanext'],
     include_package_data=True,
     zip_safe=False,
-    install_requires=[
-        "ckanapi",
-        "ckantoolkit>=0.0.2",
-        "pytz",
-    ],
+    install_requires=[],
     entry_points=\
     """
     [ckan.plugins]
@@ -31,6 +27,7 @@ setup(
     scheming_groups=ckanext.scheming.plugins:SchemingGroupsPlugin
     scheming_organizations=ckanext.scheming.plugins:SchemingOrganizationsPlugin
     scheming_test_subclass=ckanext.scheming.tests.plugins:SchemingTestSubclass
+    scheming_test_plugin=ckanext.scheming.tests.plugins:SchemingTestSchemaPlugin
 
     [paste.paster_command]
     scheming=ckanext.scheming.commands:SchemingCommand
