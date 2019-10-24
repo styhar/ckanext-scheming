@@ -48,7 +48,18 @@ def scheming_language_text(text, prefer_lang=None):
         return t.decode('utf-8')
     return t
 
-
+def scheming_field_choices(field):
+    """
+    :param field: scheming field definition
+    :returns: choices iterable or None if not found.
+    """
+    if 'choices' in field:
+        return field['choices']
+    if 'choices_helper' in field:
+        from ckantoolkit import h
+        choices_fn = getattr(h, field['choices_helper'])
+        return choices_fn(field)
+        
 def scheming_choices_label(choices, value):
     """
     :param choices: choices list of {"label": .., "value": ..} dicts
