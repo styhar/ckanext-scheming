@@ -229,6 +229,21 @@ def scheming_isodatetime_tz(field, schema):
     return validator
 
 
+@scheming_validator
+def scheming_tag_string_validation(field, schema):
+    """
+    if field['required']: check tags field if tag_string is missing
+    if not field['required']: ignore_missing
+    """
+    if field.get('required'):
+        def validator(key, data, errors, context):
+            if not data.get(key, None):
+                if not data.get(('tags', 0, 'name'), None):
+                    errors[key].append(_('Missing value'))
+        return validator
+    return ignore_missing
+
+
 def scheming_valid_json_object(value, context):
     """Store a JSON object as a serialized JSON string
 
